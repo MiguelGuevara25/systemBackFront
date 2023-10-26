@@ -107,8 +107,26 @@ const nuevoPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
 
-  console.log(token);
-  console.log(password);
+  const usuario = await Usuario.findOne({ token });
+
+  if (usuario) {
+    usuario.password = password;
+    usuario.token = "";
+
+    try {
+      await usuario.save();
+      res.json({ msg: "Password modificado correctamente" });
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    const error = new Error("Token no válido");
+    return res.status(404).json({ msg: error.message });
+  }
+};
+
+const perfil = async (req, res) => {
+  console.log("desde perfil...");
 };
 
 export {
@@ -118,4 +136,5 @@ export {
   olvidePassword,
   comprobarToken,
   nuevoPassword,
+  perfil,
 };
